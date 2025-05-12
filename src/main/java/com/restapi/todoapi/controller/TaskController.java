@@ -4,6 +4,8 @@ package com.restapi.todoapi.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,32 +30,29 @@ public class TaskController {
     }
 
     @GetMapping("/tasks")
-    public List<Task> getTasks() {
-        List<Task> tasks = taskService.getAllTasks();
-        return tasks;
+    public ResponseEntity<List<Task>> getTasks() {
+        return ResponseEntity.ok(taskService.getAllTasks());
     }
 
     @GetMapping("/tasks/{id}")
-    public Task getTaskById(@PathVariable Long id) {
-        Task task = taskService.getTaskById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found with id " + id));
-        return task;
+    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
+        return ResponseEntity.ok(taskService.getTaskById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found with id " + id)));
     }
 
     @PostMapping("/tasks") 
-    public Task createTask(@RequestBody Task task) {
-        Task createdtask = taskService.createTask(task);
-        return createdtask;
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        return new ResponseEntity<>(taskService.createTask(task), HttpStatus.CREATED);
     }
 
     @PutMapping("/tasks/{id}")
-    public Task updateTask(@PathVariable Long id, @RequestBody Task task) {
-        Task updatedTask = taskService.updateTask(id, task);
-        return updatedTask;
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
+        return ResponseEntity.ok(taskService.updateTask(id, task));
     }
 
     @DeleteMapping("task/{id}")
-    public void deleteTask(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
+        return ResponseEntity.noContent().build();
     }
 }
